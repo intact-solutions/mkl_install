@@ -1,6 +1,6 @@
 @echo off
 
-rem Copyright (c) Intel Corporation
+rem Copyright © Intel Corporation
 rem SPDX-License-Identifier: MIT
 
 rem Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,62 +46,97 @@ rem To be called if we encounter bad command-line args or user asks for help.
   echo:                  additional args must follow this script's arguments
   echo:
   echo:   --help         display this help message and exit
+  echo:   -? or /?       display this help message and exit
   echo:
-  exit /b
+  echo: The oneAPI toolkits no longer support 32-bit libraries, starting with the 2025.0 toolkit release. See the oneAPI release notes for more details.
+  echo:
+goto :eofCleanup
 :EndUsage
 
 
 rem ===========================================================================
-rem setup default configpath
+rem setup default arguments
 set configpath=""
-
-rem setup force
+set config_arg_found=""
 set force=-1
+set ia32=0
 
-rem parse arguments to this script
+rem Parse command-line arguments passed to this script.
+rem --config removal from topargs may result in a dangling ' = ' that is safely ignored.
+rem Unable to capture path/filenames containing right parenthesis characters.
+rem see: https://ss64.com/nt/syntax-brackets.html
+rem see: https://www.dostips.com/DtTipsStringManipulation.php#Snippets.Remove
+setlocal EnableDelayedExpansion
+set "_topargs=%topargs%"
+set "_force=%force%"
 :ParseParam
-  if "%~1" == "--config" (
-    if "%~2" neq "" (
-      set "configpath="%~2""
-      set "tempconfigpath=%~2"
-      setlocal EnableDelayedExpansion
-      call set tempconfigpath=%%tempconfigpath:"=%%
-      call set topargs=%%topargs:!tempconfigpath!=%%
-      call set topargs=%%topargs:--config=%%
-      rem may result in dangling ' = ' in %topargs% that is safely ignored
-      endlocal
+  if [%~1] == [--config] (
+    set "_config_arg_found=1"
+    if NOT ["%~2"] == [""] (
+      set "_configpath="%~2""
+      set "_tempconfigpath=%~2"
+      call set _topargs=%%_topargs:--config=%%
+      call set _topargs=%%_topargs:!_tempconfigpath!=%%
+      shift
+    ) else (
+      set _configpath=""
+      call set _topargs=%%_topargs:--config=%%
     )
-  ) else if "%~1" == "--force" (
-    set force=1
-    set "topargs=%topargs:--force=%"
-  ) else if "%~1" == "--help" (
-    call :Usage
-    set "topargs=%topargs:--help=%"
-    goto :eofCleanup
+  ) else if [%~1] == [--force] (
+      set "_force=1"
+      set "_topargs=%_topargs:--force=%"
+  ) else if [%~1] == [--ia32] (
+      set "_ia32=1"
+      set "_topargs=%_topargs:--ia32=%" 
+  ) else if [%~1] == [ia32] (
+      set "_ia32=1"
+      set "_topargs=%_topargs:ia32=%" 
+  ) else if [%~1] == [--help] (
+      call :Usage
+      goto :eofCleanup
+  ) else if [%~1] == [-?] (
+      call :Usage
+      goto :eofCleanup
+  ) else if [%~1] == [/?] (
+      call :Usage
+      goto :eofCleanup
   )
 
   shift
 
-  if "%~1" neq "" (
+  if [%~1] neq [] (
     goto :ParseParam
   )
 :EndParseParam
+endlocal & set "topargs=%_topargs%" & set "config_arg_found=%_config_arg_found%" & set "configpath=%_configpath%" & set "force=%_force%" & set "ia32=%_ia32%"
+
+rem Handle special case where "" are missing around %configpath% variable.
+if [%configpath%] == [] (
+  set configpath=""
+)
 
 rem Setvars design only accommodates single word arguments.
 rem Some of the env\vars.bat scripts choke on quoted arguments.
 rem Remove any remaining " characters from passed argument array.
-rem Removing " chars is touchy, removing = chars seems to be impossible.
+rem Removing " chars is touchy, removing "=" chars seems to be impossible.
 rem First line (below) ensures that at least one " is found by second line.
 set topargs=%topargs%"
 set topargs=%topargs:"=%
 
+if ["%ia32%"] == ["1"] (
+  echo :: ERROR: The oneAPI toolkits no longer support 32-bit libraries, starting with the 2025.0 toolkit release. See the oneAPI release notes for more details.
+  call :Usage
+  goto :eofCleanup
+)
 
 rem ===========================================================================
 rem Override default 64-bit target if 32-bit Visual Studio env already exists.
 rem Primarily affects "classic" compilers and some libraries (e.g., IPP, MKL).
 if defined VSCMD_VER (
-  if /i "%VSCMD_ARG_TGT_ARCH%"=="x86" (
-    set TARGET_ARCH=ia32
+  if /i [%VSCMD_ARG_TGT_ARCH%] == [x86] (
+    echo :: ERROR: The oneAPI toolkits no longer support 32-bit libraries, starting with the 2025.0 toolkit release. See the oneAPI release notes for more details.
+    call :Usage
+    goto :eofCleanup
   ) else (
     set TARGET_ARCH=intel64
   )
@@ -110,8 +145,25 @@ set "topargs=%topargs% %TARGET_ARCH%"
 
 
 rem ===========================================================================
-if "%SETVARS_COMPLETED%" equ "1" (
-  if %force% == -1 (
+rem Capture bad config files first helps prevent confusing error messages.
+rem Especially when no config file was provided, potentially consuming a valid option.
+if ["%config_arg_found%"] == ["1"] (
+  if [%configpath%] == [""] (
+    echo :: ERROR: --config option specified but no config filename provided.
+    call :Usage
+    goto :eofCleanup
+  )
+  if NOT EXIST %configpath% (
+    echo :: ERROR: --config file not found: %configpath%
+    call :Usage
+    goto :eofCleanup
+  )
+)
+
+
+rem ===========================================================================
+if ["%SETVARS_COMPLETED%"] == ["1"] (
+  if [%force%] == [-1] (
     echo :: WARNING: %script_name% has already been run. Skipping re-execution.
     echo:   To force a re-execution of %script_name%, use the '--force' option.
     echo:   Using '--force' can result in excessive use of your environment variables.
@@ -124,7 +176,12 @@ rem ===========================================================================
 rem setup default configuration
 set componentArray[default]=latest
 
-goto :GetConfig
+rem load configuration from file
+if ["%config_arg_found%"] == ["1"] (
+  for /F "usebackq tokens=1,2 delims==" %%i in (%configpath%) do call :BuildConfigList %%i %%j
+)
+goto :EndBuildConfigList
+
 :BuildConfigArray
   rem Creates componentArray members in the global environment space and
   rem trims any whitespace from the component name and version name/value.
@@ -133,16 +190,6 @@ goto :GetConfig
   set "componentVersion=%2"
 exit /b
 
-:GetConfig
-rem load configuration from file
-if EXIST %configpath% (
-  for /F "usebackq tokens=1,2 delims==" %%i in (%configpath%) do call :BuildConfigList %%i %%j
-) else if [%configpath%] neq [""] (
-    echo :: ERROR: %script_name% config file not found: %configpath%
-    goto :eofCleanup
-)
-goto :EndBuildConfigList
-
 :BuildConfigList
   call :BuildConfigArray %1 %2
   if "%componentName%" == "default" (
@@ -150,10 +197,11 @@ goto :EndBuildConfigList
       if NOT "%componentVersion%" == "latest" (
         echo :: ERROR: Bad "default=%componentVersion%" entry in %configpath% file.
         echo:   Only "default=latest" and "default=exclude" are supported.
-        goto :eofCleanup
+        call :eofCleanup
+        goto :nonExistentLabel || exit /b 1
       )
     ) else (
-      echo :: NOTICE: "default=exclude" entry found in %configpath% file.
+      echo :: NOTE: "default=exclude" entry found in %configpath% file.
       echo:   Only explicitly specified components will be processed by "%script_name%".
     )
   ) else if EXIST "%ONEAPI_ROOT%\%componentName%\" (
@@ -161,23 +209,25 @@ goto :EndBuildConfigList
         if NOT EXIST "%ONEAPI_ROOT%\%componentName%\%componentVersion%\env\vars.bat" (
           echo :: ERROR: Bad config file entry.
           echo:   Unrecognized version "%componentVersion%" for "%componentName%" component specified in %configpath% file.
-          goto :eofCleanup
+          call :eofCleanup
+          goto :nonExistentLabel || exit /b 1
         )
       ) else (
-        echo :: NOTICE: Exclude flag found for "%componentName%" component.
+        echo :: NOTE: Exclude flag found for "%componentName%" component.
         echo:   The "%componentName%" env\vars.bat script will not be processed by "%script_name%".
       )
   ) else (
       echo :: ERROR: Bad config file entry.
       echo:   Unrecognized component "%componentName%" specified in %configpath% file.
-      goto :eofCleanup
+      call :eofCleanup
+      goto :nonExistentLabel || exit /b 1
   )
 exit /b
 :EndBuildConfigList
 
 
 rem ===========================================================================
-title Intel(r) oneAPI Tools
+title Intel(r) oneAPI
 echo :: initializing oneAPI environment...
 
 rem ===========================================================================
@@ -213,7 +263,8 @@ if defined VSCMD_VER (
 
 rem ===========================================================================
 rem loop thru component directories (see :DoIt), calling vars.bat for each one
-for /f "delims=" %%d in ( 'dir /a:d /b "%ONEAPI_ROOT%"' ) do call :DoIt "%%d"
+rem see: https://stackoverflow.com/a/17113667/2914328 regarding the '^' character
+for /f "delims=" %%d in ( 'dir /a:d /b "%ONEAPI_ROOT%" 2^>nul' ) do call :DoIt "%%d"
 goto EndDoIt
 
 :DoIt
@@ -233,14 +284,12 @@ goto EndDoIt
   if "exclude" == "%version%"  (
     rem echo:   "excluding"
   ) else (
-    rem echo:   "calling direct, no shortcut"
     if EXIST "%componentpath%\%version%\env\vars.bat" (
       echo :  %cname% -- %version%
-      rem the 'call' command is not properly handling special characters, even when quoted. Use pushd/popd
+      rem 'call' command is not properly handling special characters, even when quoted, use pushd/popd
       pushd "%componentpath%\%version%\env"
       call vars.bat %topargs%
       popd
-      rem echo:   %cname% vars.bat LOADED
     ) else (
       rem echo:   %cname% vars.bat file not found in "%componentpath%\%version%\env\vars.bat"
     )
@@ -250,16 +299,21 @@ exit /b
 
 set SETVARS_COMPLETED=1
 echo :: oneAPI environment initialized ::
+title Intel(r) oneAPI
+goto :keepTitle
 
+rem Call or jump to in order to insure a clean exit from this script.
+rem see: https://ss64.com/nt/exit.html
 :eofCleanup
-title Intel(r) oneAPI Tools
-
+title cmd
+:keepTitle
 set "SETVARS_CALL="
 set "script_name="
 set "topargs="
 set "configpath="
-set "tempconfigpath="
+set "config_arg_found="
 set "force="
+set "ia32="
 set "componentpath="
 set "cname="
 set "version="
@@ -269,4 +323,4 @@ set "componentVersion="
 set "TARGET_ARCH="
 for /f "delims=" %%d in ( 'dir /a:d /b "%ONEAPI_ROOT%"' ) do set "componentArray[%%d]="
 
-goto :eof
+goto:eof

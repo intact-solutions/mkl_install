@@ -19,7 +19,7 @@
 #define MKL_BLAS_COMPUTE_MODE compute_mode::unset
 #endif
 
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 #include <cstdint>
 #include <complex>
 

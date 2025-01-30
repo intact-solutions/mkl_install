@@ -17,7 +17,7 @@
 
 #include <exception>
 #include <string>
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wweak-vtables"

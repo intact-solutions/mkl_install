@@ -25,7 +25,7 @@ extern "C" {
 
 
 /**
-#if defined( _WIN32 ) || ( _WIN64 )
+#if defined( _WIN32 ) || defined( _WIN64 )
 
 #define   d_init_Helmholtz_2D   D_INIT_HELMHOLTZ_2D
 #define d_commit_Helmholtz_2D D_COMMIT_HELMHOLTZ_2D

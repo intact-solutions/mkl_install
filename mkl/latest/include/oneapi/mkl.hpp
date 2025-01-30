@@ -24,7 +24,7 @@
 #include "oneapi/mkl/export.hpp"
 #include "oneapi/mkl/types.hpp"
 #include "oneapi/mkl/blas.hpp"
-#include "oneapi/mkl/dfti.hpp"
+#include "oneapi/mkl/dft.hpp"
 #include "oneapi/mkl/lapack.hpp"
 #include "oneapi/mkl/vm.hpp"
 #include "oneapi/mkl/rng.hpp"

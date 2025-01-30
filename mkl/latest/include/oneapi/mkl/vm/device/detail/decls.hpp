@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2019-2022 Intel Corporation.
+* Copyright 2019-2024 Intel Corporation.
 *
 * This software and the related documents are Intel copyrighted  materials,  and
 * your use of  them is  governed by the  express license  under which  they were
@@ -12,68 +12,70 @@
 * License.
 *******************************************************************************/
 
-#ifndef __ONEAPI_MKL_VM_DEVICE_DETAIL_DECLS_HPP__
-#define __ONEAPI_MKL_VM_DEVICE_DETAIL_DECLS_HPP__
+#ifndef ONEAPI_MKL_VM_DEVICE_DETAIL_DECLS_HPP
+#define ONEAPI_MKL_VM_DEVICE_DETAIL_DECLS_HPP 1
 
-
-namespace oneapi::mkl::vm::device {
-namespace detail {
+namespace oneapi::mkl::vm::device::detail {
 
 enum class Accuracy : int {
-    NotAvailable = -1,
-    NA = NotAvailable,
+  kNotAvailable = -1,
+  kNA = kNotAvailable,
 
-    NotSpecified = 0,
-    NS = NotSpecified,
+  kNotSpecified = 0,
+  kNS = kNotSpecified,
 
-    CorrectlyRounded = 1,
-    CR = CorrectlyRounded,
+  kCorrectlyRounded = 15,
+  kCR = kCorrectlyRounded,
 
-    High = 4,
-    HA = High,
+  kHigh = 12,
+  kHA = kHigh,
 
-    Lower = 8,
-    LA = Lower,
+  kLower = 8,
+  kLA = kLower,
 
-    EnhancedPerformance = 15,
-    EP = EnhancedPerformance,
+  kEnhancedPerformance = 1,
+  kEP = kEnhancedPerformance,
 };
 
-struct _HA { static constexpr Accuracy a = Accuracy::High; };
-struct _LA { static constexpr Accuracy a = Accuracy::Lower; };
-struct _EP { static constexpr Accuracy a = Accuracy::EnhancedPerformance; };
+struct AccuracyHA {
+  static constexpr Accuracy a = Accuracy::kHigh;
+};
+struct AccuracyLA {
+  static constexpr Accuracy a = Accuracy::kLower;
+};
+struct AccuracyEP {
+  static constexpr Accuracy a = Accuracy::kEnhancedPerformance;
+};
 
-constexpr _HA HA;
-constexpr _LA LA;
-constexpr _EP EP;
+namespace mode {
+constexpr AccuracyHA ha;
+constexpr AccuracyLA la;
+constexpr AccuracyEP ep;
+constexpr AccuracyHA not_defined;
+} // namespace mode
 
-constexpr _HA DE;
-
-constexpr _HA ha;
-constexpr _LA la;
-constexpr _EP ep;
-
-constexpr _HA not_defined;
+constexpr AccuracyHA DefaultAccuracy;
 
 enum class Feature : int {
-    NotAvailable = -1,
-    NA = NotAvailable,
+  kNotAvailable = -1,
+  kNA = kNotAvailable,
 
-    NotSpecified = 0,
-    NS = NotSpecified,
+  kNotSpecified = 0,
+  kNS = kNotSpecified,
 
-    Generic = 1,
-    GE = Generic,
+  kGeneric = 1,
+  kGE = kGeneric,
 
-    Tailored = 2,
-    TA = Tailored,
-};
+  kTailored = 2,
+  kTA = kTailored,
 
-}
+  kDoublePrecisionRequired = 3,
+  kDR = kDoublePrecisionRequired,
 
+  kSinglePrecisionOnly = 4,
+  kSO = kSinglePrecisionOnly,
+}; // enum Feature
 
-}
+} // namespace oneapi::mkl::vm::device::detail
 
-#endif
-
-
+#endif // #ifndef ONEAPI_MKL_VM_DEVICE_DETAIL_DECLS_HPP

@@ -16,7 +16,7 @@
 #define _MKL_BLAS_SYCL_USM_HPP__
 
 
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 #include <cstdint>
 #include <complex>
 

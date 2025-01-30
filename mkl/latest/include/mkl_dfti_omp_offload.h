@@ -36,27 +36,20 @@ extern "C" {
     DFTI_EXTERN MKL_LONG mkl_DftiCommitDescriptor_omp_offload(DFTI_DESCRIPTOR_HANDLE,
                                                               void *interop_obj);
 
-#if (_OPENMP >= 202011)
 #pragma omp declare variant(mkl_DftiCommitDescriptor_omp_offload) \
     match(construct={dispatch}, device={arch(gen)}) \
-    append_args(interop(targetsync))
-#endif
-#pragma omp declare variant(mkl_DftiCommitDescriptor_omp_offload)             \
-    match(construct = {target variant dispatch}, device = {arch(gen)})
+    append_args(interop(prefer_type("sycl","level_zero"),targetsync))
     DFTI_EXTERN MKL_LONG DftiCommitDescriptor(DFTI_DESCRIPTOR_HANDLE);
 
 
     DFTI_EXTERN MKL_LONG mkl_DftiComputeForward_omp_offload(DFTI_DESCRIPTOR_HANDLE,
                                                             void *p1,
                                                             void *interop_obj, ...);
-#if (_OPENMP >= 202011)
+
 #pragma omp declare variant(mkl_DftiComputeForward_omp_offload) \
     match(construct={dispatch}, device={arch(gen)}) \
-    append_args(interop(targetsync)) \
+    append_args(interop(prefer_type("sycl","level_zero"),targetsync)) \
     adjust_args(need_device_ptr:p1)
-#endif
-#pragma omp declare variant(mkl_DftiComputeForward_omp_offload)               \
-    match(construct = {target variant dispatch}, device = {arch(gen)})
     DFTI_EXTERN MKL_LONG DftiComputeForward(DFTI_DESCRIPTOR_HANDLE,
                                             void *p1, ...);
 
@@ -65,14 +58,10 @@ extern "C" {
                                                              void *p1,
                                                              void *interop_obj, ...);
 
-#if (_OPENMP >= 202011)
 #pragma omp declare variant(mkl_DftiComputeBackward_omp_offload) \
     match(construct={dispatch}, device={arch(gen)}) \
-    append_args(interop(targetsync)) \
+    append_args(interop(prefer_type("sycl","level_zero"),targetsync)) \
     adjust_args(need_device_ptr:p1)
-#endif
-#pragma omp declare variant(mkl_DftiComputeBackward_omp_offload)              \
-    match(construct = {target variant dispatch}, device = {arch(gen)})
     DFTI_EXTERN MKL_LONG DftiComputeBackward(DFTI_DESCRIPTOR_HANDLE,
                                              void *p1, ...);
 

@@ -92,13 +92,33 @@ private:
 //
 // Supported parallelization methods:
 //      skip_ahead
+//
+namespace mrg32k3a_mode {
+struct optimal {};
+struct custom {
+    custom() = delete;
+    std::uint32_t num_streams;
+};
+constexpr optimal optimal_v{};
+} // namespace mrg32k3a_mode
+
 class DLL_EXPORT mrg32k3a : detail::engine_base<mrg32k3a> {
 public:
     static constexpr std::uint32_t default_seed = 1;
 
     mrg32k3a(sycl::queue queue, std::uint32_t seed = default_seed);
+    
+    mrg32k3a(sycl::queue queue, std::uint32_t seed, mrg32k3a_mode::optimal mode);
+    
+    mrg32k3a(sycl::queue queue, std::uint32_t seed, mrg32k3a_mode::custom mode);
 
     mrg32k3a(sycl::queue queue, std::initializer_list<std::uint32_t> seed);
+
+    mrg32k3a(sycl::queue queue, std::initializer_list<std::uint32_t> seed, 
+             mrg32k3a_mode::optimal mode);
+
+    mrg32k3a(sycl::queue queue, std::initializer_list<std::uint32_t> seed, 
+             mrg32k3a_mode::custom mode);
 
     mrg32k3a(const mrg32k3a& other);
 

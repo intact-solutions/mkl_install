@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <bitset>
 
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 #include "oneapi/mkl/export.hpp"
 #include "oneapi/mkl/exceptions.hpp"

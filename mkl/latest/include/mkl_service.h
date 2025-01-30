@@ -118,7 +118,8 @@ int     MKL_Enable_Instructions(int);
 #define  MKL_ENABLE_AVX512_E2       7
 #define  MKL_ENABLE_AVX512_E3       8
 #define  MKL_ENABLE_AVX512_E4       9
-#define  MKL_ENABLE_AVX2_E1        10
+#define  MKL_ENABLE_AVX2_E1         10
+#define  MKL_ENABLE_AVX512_E5       11
 #define  MKL_SINGLE_PATH_ENABLE     0x0600
 
 /* Single Dynamic library interface */
@@ -131,7 +132,6 @@ int     MKL_Set_Interface_Layer(int code);
 /* Single Dynamic library threading */
 #define MKL_THREADING_INTEL         0
 #define MKL_THREADING_SEQUENTIAL    1
-#define MKL_THREADING_PGI           2
 #define MKL_THREADING_GNU           3
 #define MKL_THREADING_TBB           4
 int     MKL_Set_Threading_Layer(int code);

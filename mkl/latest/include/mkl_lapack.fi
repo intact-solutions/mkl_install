@@ -2459,9 +2459,9 @@
       END INTERFACE
 
       INTERFACE
-      SUBROUTINE DGETRSNP_BATCHNP_STRIDED( TRANS, N, NRHS, A, LDA,      &
-     &                                     STRIDE_A, B, LDB,            &
-     &                                     STRIDE_B, BATCH_SIZE, INFO )
+      SUBROUTINE DGETRSNP_BATCH_STRIDED( TRANS, N, NRHS, A, LDA,        &
+     &                                   STRIDE_A, B, LDB,              &
+     &                                   STRIDE_B, BATCH_SIZE, INFO )
       IMPLICIT NONE
       CHARACTER         TRANS
       INTEGER           N, NRHS, LDA, STRIDE_A,                         &
@@ -2733,6 +2733,210 @@
       COMPLEX*16        A, B
       INTEGER           M, N, NRHS, LDA, STRIDE_A, LDB, STRIDE_B,       &
      &                  BATCH_SIZE, INFO
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE DGESVDA_BATCH_STRIDED( IPARM, IRANK, M, N,             &
+     &                                A, LDA, STRIDE_A, S, STRIDE_S,    &
+     &                                U, LDU, STRIDE_U,                 &
+     &                                VT, LDVT, STRIDE_VT,              &
+     &                                TOLERANCE, RESIDUAL,              &
+     &                                WORK, LWORK,                      &
+     &                                BATCH_SIZE, INFO )
+      IMPLICIT NONE
+      INTEGER           IPARM(*), IRANK(*), INFO(*)
+      INTEGER           M, N, LDA, STRIDE_A, STRIDE_S, LDU, STRIDE_U,   &
+     &                  LDVT, STRIDE_VT, LWORK, BATCH_SIZE
+      DOUBLE PRECISION  A(*), U(*), VT(*), WORK(*)
+      DOUBLE PRECISION  S(*), RESIDUAL(*)
+      DOUBLE PRECISION  TOLERANCE
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE SGESVDA_BATCH_STRIDED( IPARM, IRANK, M, N,             &
+     &                                A, LDA, STRIDE_A, S, STRIDE_S,    &
+     &                                U, LDU, STRIDE_U,                 &
+     &                                VT, LDVT, STRIDE_VT,              &
+     &                                TOLERANCE, RESIDUAL,              &
+     &                                WORK, LWORK,                      &
+     &                                BATCH_SIZE, INFO )
+      IMPLICIT NONE
+      INTEGER           IPARM(*), IRANK(*), INFO(*)
+      INTEGER           M, N, LDA, STRIDE_A, STRIDE_S, LDU, STRIDE_U,   &
+     &                  LDVT, STRIDE_VT, LWORK, BATCH_SIZE
+      REAL              A(*), U(*), VT(*), WORK(*)
+      REAL              S(*), RESIDUAL(*)
+      REAL              TOLERANCE
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE CGESVDA_BATCH_STRIDED( IPARM, IRANK, M, N,             &
+     &                                A, LDA, STRIDE_A, S, STRIDE_S,    &
+     &                                U, LDU, STRIDE_U,                 &
+     &                                VT, LDVT, STRIDE_VT,              &
+     &                                TOLERANCE, RESIDUAL,              &
+     &                                WORK, LWORK,                      &
+     &                                BATCH_SIZE, INFO )
+      IMPLICIT NONE
+      INTEGER           IPARM(*), IRANK(*), INFO(*)
+      INTEGER           M, N, LDA, STRIDE_A, STRIDE_S, LDU, STRIDE_U,   &
+     &                  LDVT, STRIDE_VT, LWORK, BATCH_SIZE
+      COMPLEX           A(*), U(*), VT(*), WORK(*)
+      REAL              S(*), RESIDUAL(*)
+      REAL              TOLERANCE
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE ZGESVDA_BATCH_STRIDED( IPARM, IRANK, M, N,             &
+     &                                A, LDA, STRIDE_A, S, STRIDE_S,    &
+     &                                U, LDU, STRIDE_U,                 &
+     &                                VT, LDVT, STRIDE_VT,              &
+     &                                TOLERANCE, RESIDUAL,              &
+     &                                WORK, LWORK,                      &
+     &                                BATCH_SIZE, INFO )
+      IMPLICIT NONE
+      INTEGER           IPARM(*), IRANK(*), INFO(*)
+      INTEGER           M, N, LDA, STRIDE_A, STRIDE_S, LDU, STRIDE_U,   &
+     &                  LDVT, STRIDE_VT, LWORK, BATCH_SIZE
+      COMPLEX*16        A(*), U(*), VT(*), WORK(*)
+      DOUBLE PRECISION  S(*), RESIDUAL(*)
+      DOUBLE PRECISION  TOLERANCE
+      END
+      END INTERFACE
+
+! LAPACK 3.11.0 routines
+
+      INTERFACE
+      SUBROUTINE CGELST(TRANS,M,N,NRHS,A,LDA,B,LDB,WORK,LWORK,INFO)
+      CHARACTER          TRANS
+      INTEGER            INFO,LDA,LDB,LWORK,M,N,NRHS
+      COMPLEX            A(LDA,*),B(LDB,*),WORK(*)
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE DGELST(TRANS,M,N,NRHS,A,LDA,B,LDB,WORK,LWORK,INFO)
+      CHARACTER          TRANS
+      INTEGER            INFO,LDA,LDB,LWORK,M,N,NRHS
+      DOUBLE PRECISION   A(LDA,*),B(LDB,*),WORK(*)
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE SGELST(TRANS,M,N,NRHS,A,LDA,B,LDB,WORK,LWORK,INFO)
+      CHARACTER          TRANS
+      INTEGER            INFO,LDA,LDB,LWORK,M,N,NRHS
+      REAL               A(LDA,*),B(LDB,*),WORK(*)
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE ZGELST(TRANS,M,N,NRHS,A,LDA,B,LDB,WORK,LWORK,INFO)
+      CHARACTER          TRANS
+      INTEGER            INFO,LDA,LDB,LWORK,M,N,NRHS
+      COMPLEX*16         A(LDA,*),B(LDB,*),WORK(*)
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE CLATRS3( UPLO, TRANS, DIAG, NORMIN, N, NRHS, A, LDA,   &
+     &                    X, LDX, SCALE, CNORM, WORK, LWORK, INFO )
+      IMPLICIT NONE
+      CHARACTER          DIAG, TRANS, NORMIN, UPLO
+      INTEGER            INFO, LDA, LWORK, LDX, N, NRHS
+      COMPLEX            A( LDA, * ), X( LDX, * )
+      REAL               CNORM( * ), SCALE( * ), WORK( * )
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE DLATRS3( UPLO, TRANS, DIAG, NORMIN, N, NRHS, A, LDA,   &
+     &                    X, LDX, SCALE, CNORM, WORK, LWORK, INFO )
+      IMPLICIT NONE
+      CHARACTER          DIAG, TRANS, NORMIN, UPLO
+      INTEGER            INFO, LDA, LWORK, LDX, N, NRHS
+      DOUBLE PRECISION   A( LDA, * ), X( LDX, * )
+      DOUBLE PRECISION   CNORM( * ), SCALE( * ), WORK( * )
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE SLATRS3( UPLO, TRANS, DIAG, NORMIN, N, NRHS, A, LDA,   &
+     &                    X, LDX, SCALE, CNORM, WORK, LWORK, INFO )
+      IMPLICIT NONE
+      CHARACTER          DIAG, TRANS, NORMIN, UPLO
+      INTEGER            INFO, LDA, LWORK, LDX, N, NRHS
+      REAL               A( LDA, * ), X( LDX, * )
+      REAL               CNORM( * ), SCALE( * ), WORK( * )
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE ZLATRS3( UPLO, TRANS, DIAG, NORMIN, N, NRHS, A, LDA,   &
+     &                    X, LDX, SCALE, CNORM, WORK, LWORK, INFO )
+      IMPLICIT NONE
+      CHARACTER          DIAG, TRANS, NORMIN, UPLO
+      INTEGER            INFO, LDA, LWORK, LDX, N, NRHS
+      COMPLEX*16         A( LDA, * ), X( LDX, * )
+      DOUBLE PRECISION   CNORM( * ), SCALE( * ), WORK( * )
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE CTRSYL3( TRANA, TRANB, ISGN, M, N, A, LDA, B, LDB, C,  &
+     &                    LDC, SCALE, SWORK, LDSWORK, INFO )
+      IMPLICIT NONE
+      CHARACTER          TRANA, TRANB
+      INTEGER            INFO, ISGN, LDA, LDB, LDC, LDSWORK, M, N
+      REAL               SCALE
+      COMPLEX            A( LDA, * ), B( LDB, * ), C( LDC, * )
+      REAL               SWORK( LDSWORK, * )
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE DTRSYL3( TRANA, TRANB, ISGN, M, N, A, LDA, B, LDB, C,  &
+     &                    LDC, SCALE, IWORK, LIWORK, SWORK, LDSWORK,    &
+     &                    INFO )
+      IMPLICIT NONE
+      CHARACTER          TRANA, TRANB
+      INTEGER            INFO, ISGN, LDA, LDB, LDC, M, N,               &
+     &                   LIWORK, LDSWORK
+      DOUBLE PRECISION   SCALE
+      INTEGER            IWORK( * )
+      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * ),         &
+     &                   SWORK( LDSWORK, * )
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE STRSYL3( TRANA, TRANB, ISGN, M, N, A, LDA, B, LDB, C,  &
+     &                    LDC, SCALE, IWORK, LIWORK, SWORK, LDSWORK,    &
+     &                    INFO )
+      IMPLICIT NONE
+      CHARACTER          TRANA, TRANB
+      INTEGER            INFO, ISGN, LDA, LDB, LDC, M, N,               &
+     &                   LIWORK, LDSWORK
+      REAL               SCALE
+      INTEGER            IWORK( * )
+      REAL               A( LDA, * ), B( LDB, * ), C( LDC, * ),         &
+     &                   SWORK( LDSWORK, * )
+      END
+      END INTERFACE
+
+      INTERFACE
+      SUBROUTINE ZTRSYL3( TRANA, TRANB, ISGN, M, N, A, LDA, B, LDB, C,  &
+     &                    LDC, SCALE, SWORK, LDSWORK, INFO )
+      IMPLICIT NONE
+      CHARACTER          TRANA, TRANB
+      INTEGER            INFO, ISGN, LDA, LDB, LDC, LDSWORK, M, N
+      DOUBLE PRECISION   SCALE
+      COMPLEX*16         A( LDA, * ), B( LDB, * ), C( LDC, * )
+      DOUBLE PRECISION   SWORK( LDSWORK, * )
       END
       END INTERFACE
 
@@ -6477,7 +6681,7 @@
 
       INTERFACE
       SUBROUTINE CLAQZ0(WANTS,WANTQ,WANTZ,N,ILO,IHI,A,LDA,B,LDB,        &
-     &                  AlPHA,BETA,Q,LDQ,Z,LDZ,WORK,LWORK,RWORK,REC,    &
+     &                  ALPHA,BETA,Q,LDQ,Z,LDZ,WORK,LWORK,RWORK,REC,    &
      &                  INFO)
       CHARACTER          WANTS,WANTQ,WANTZ
       INTEGER            N,ILO,IHI,LDA,LDB,LDQ,LDZ,LWORK,REC,INFO
@@ -17441,7 +17645,7 @@
 
       INTERFACE
       SUBROUTINE ZLAQZ0(WANTS,WANTQ,WANTZ,N,ILO,IHI,A,LDA,B,LDB,        &
-     &                  AlPHA,BETA,Q,LDQ,Z,LDZ,WORK,LWORK,RWORK,REC,    &
+     &                  ALPHA,BETA,Q,LDQ,Z,LDZ,WORK,LWORK,RWORK,REC,    &
      &                  INFO)
       CHARACTER          WANTS,WANTQ,WANTZ
       INTEGER            N,ILO,IHI,LDA,LDB,LDQ,LDZ,LWORK,REC,INFO

@@ -1,6 +1,6 @@
 /* <copyright>
 
-    Copyright (C) 2021-2023 Intel Corporation.
+    Copyright (C) 2021-2024 Intel Corporation.
 
     This software and the related documents are Intel copyrighted materials,
     and your use of them is governed by the express license under which they
@@ -14,11 +14,11 @@
 </copyright> */
 
 prefix=${pcfiledir}/../../
-libdir=${prefix}/windows/compiler/lib/intel64_win/
-includedir=${prefix}/windows/compiler/include
+libdir=${prefix}/lib/
+includedir=${prefix}/include
 
 Name: libiomp5
 Description: Intel(R) OpenMP Runtime Library for applications running on Intel(R) 64
-Version: 2023.1.0
+Version: 2025.0.0
 Libs: -L${libdir} -llibiomp5md
 Cflags: -I ${includedir}

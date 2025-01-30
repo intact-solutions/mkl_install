@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 #include "oneapi/mkl/export.hpp"
 #include "oneapi/mkl/exceptions.hpp"
@@ -68,7 +68,7 @@ struct dataset<ObservationsLayout, Type*> {
     Type* observations;
     Type* weights = nullptr;
     std::int64_t* indices = nullptr;
-    static constexpr layout layout = ObservationsLayout;
+    static constexpr oneapi::mkl::stats::layout layout = ObservationsLayout;
 };
 
 // Specialization for buffer-based API
@@ -99,7 +99,7 @@ struct dataset<ObservationsLayout, sycl::buffer<Type, 1>> {
     sycl::buffer<Type, 1> observations;
     sycl::buffer<Type, 1> weights = {0};
     sycl::buffer<std::int64_t, 1> indices = {0};
-    static constexpr layout layout = ObservationsLayout;
+    static constexpr oneapi::mkl::stats::layout layout = ObservationsLayout;
 };
 
 // Helper funtions to make dataset

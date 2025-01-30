@@ -286,7 +286,7 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 #define MKL_DC_CBLAS_DGEMM_CONVERT(layout, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
     \
-    char *ftrans[]   = { "N", "T", "C"};\
+    const char *ftrans[]   = { "N", "T", "C"};\
     \
     MKL_INT index_transa, index_transb;\
     index_transa = (transa) - CblasNoTrans;\
@@ -321,7 +321,7 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 #define MKL_DC_CBLAS_SGEMM_CONVERT(layout, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
     \
-    char *ftrans[]   = { "N", "T", "C"};\
+    const char *ftrans[]   = { "N", "T", "C"};\
     \
     MKL_INT index_transa, index_transb;\
     index_transa = (transa) - CblasNoTrans;\
@@ -356,7 +356,7 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 #define MKL_DC_CBLAS_CGEMM_CONVERT(layout, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
     \
-    char *ftrans[]   = { "N", "T", "C"};\
+    const char *ftrans[]   = { "N", "T", "C"};\
     \
     MKL_INT index_transa, index_transb;\
     index_transa = (transa) - CblasNoTrans;\
@@ -366,23 +366,23 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
     if ((layout) == CblasRowMajor) {         \
         if (MKL_DC_CGEMM_CBLAS_CHECKSIZE(m,n,k)) { \
             fname_unrolledc(ftrans[index_transb], ftrans[index_transa],\
-                    &(temp_n), &(temp_m), &(temp_k), (alpha),\
-                    (b), &(temp_ldb), (a), &(temp_lda), (beta), (c), &(temp_ldc));\
+                    &(temp_n), &(temp_m), &(temp_k), (const void *)(alpha),\
+                    (const void *)(b), &(temp_ldb), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc));\
         } else { \
             fname_direct(ftrans[index_transb], ftrans[index_transa],\
-                    &(temp_n), &(temp_m), &(temp_k), (alpha),\
-                    (b), &(temp_ldb), (a), &(temp_lda), (beta), (c), &(temp_ldc), &mkl_direct_call_flag);\
+                    &(temp_n), &(temp_m), &(temp_k), (const void *)(alpha),\
+                    (const void *)(b), &(temp_ldb), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc), &mkl_direct_call_flag);\
         }\
     }\
     else if ((layout) == CblasColMajor) {    \
         if (MKL_DC_CGEMM_CBLAS_CHECKSIZE(m,n,k)) { \
             fname_unrolledc(ftrans[index_transa], ftrans[index_transb],\
-                    &(temp_m), &(temp_n), &(temp_k), (alpha),\
-                    (a), &(temp_lda), (b), &(temp_ldb), (beta), (c), &(temp_ldc));\
+                    &(temp_m), &(temp_n), &(temp_k), (const void *)(alpha),\
+                    (const void *)(a), &(temp_lda), (const void *)(b), &(temp_ldb), (const void *)(beta), (void *)(c), &(temp_ldc));\
         } else { \
             fname_direct(ftrans[index_transa], ftrans[index_transb],\
-                    &(temp_m), &(temp_n), &(temp_k), (alpha),\
-                    (a), &(temp_lda), (b), &(temp_ldb), (beta), (c), &(temp_ldc), &mkl_direct_call_flag);\
+                    &(temp_m), &(temp_n), &(temp_k), (const void *)(alpha),\
+                    (const void *)(a), &(temp_lda), (const void *)(b), &(temp_ldb), (const void *)(beta), (void *)(c), &(temp_ldc), &mkl_direct_call_flag);\
         }\
     }\
 } while (0)
@@ -390,7 +390,7 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 #define MKL_DC_CBLAS_ZGEMM_CONVERT(layout, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
     \
-    char *ftrans[]   = { "N", "T", "C"};\
+    const char *ftrans[]   = { "N", "T", "C"};\
     \
     MKL_INT index_transa, index_transb;\
     index_transa = (transa) - CblasNoTrans;\
@@ -400,23 +400,23 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
     if ((layout) == CblasRowMajor) {         \
         if (MKL_DC_ZGEMM_CBLAS_CHECKSIZE(m,n,k)) { \
             fname_unrolledc(ftrans[index_transb], ftrans[index_transa],\
-                    &(temp_n), &(temp_m), &(temp_k), (alpha),\
-                    (b), &(temp_ldb), (a), &(temp_lda), (beta), (c), &(temp_ldc));\
+                    &(temp_n), &(temp_m), &(temp_k), (const void *)(alpha),\
+                    (const void *)(b), &(temp_ldb), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc));\
         } else { \
             fname_direct(ftrans[index_transb], ftrans[index_transa],\
-                    &(temp_n), &(temp_m), &(temp_k), (alpha),\
-                    (b), &(temp_ldb), (a), &(temp_lda), (beta), (c), &(temp_ldc), &mkl_direct_call_flag);\
+                    &(temp_n), &(temp_m), &(temp_k), (const void *)(alpha),\
+                    (const void *)(b), &(temp_ldb), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc), &mkl_direct_call_flag);\
         }\
     }\
     else if ((layout) == CblasColMajor) {    \
         if (MKL_DC_ZGEMM_CBLAS_CHECKSIZE(m,n,k)) { \
             fname_unrolledc(ftrans[index_transa], ftrans[index_transb],\
-                    &(temp_m), &(temp_n), &(temp_k), (alpha),\
-                    (a), &(temp_lda), (b), &(temp_ldb), (beta), (c), &(temp_ldc));\
+                    &(temp_m), &(temp_n), &(temp_k), (const void *)(alpha),\
+                    (const void *)(a), &(temp_lda), (const void *)(b), &(temp_ldb), (const void *)(beta), (void *)(c), &(temp_ldc));\
         } else { \
             fname_direct(ftrans[index_transa], ftrans[index_transb],\
-                    &(temp_m), &(temp_n), &(temp_k), (alpha),\
-                    (a), &(temp_lda), (b), &(temp_ldb), (beta), (c), &(temp_ldc), &mkl_direct_call_flag);\
+                    &(temp_m), &(temp_n), &(temp_k), (const void *)(alpha),\
+                    (const void *)(a), &(temp_lda), (const void *)(b), &(temp_ldb), (const void *)(beta), (void *)(c), &(temp_ldc), &mkl_direct_call_flag);\
         }\
     }\
 } while (0)
@@ -439,10 +439,10 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 /* CBLAS TRSM */
 #define MKL_DC_CBLAS_DTRSM_CONVERT(layout, side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
-    char *fside[]    = {"L", "R"};\
-    char *fuplo[]    = {"U", "L"};\
-    char *ftrans[]   = {"N", "T", "C"};\
-    char *fdiag[]    = {"N", "U"};\
+    const char *fside[]    = {"L", "R"};\
+    const char *fuplo[]    = {"U", "L"};\
+    const char *ftrans[]   = {"N", "T", "C"};\
+    const char *fdiag[]    = {"N", "U"};\
     MKL_INT index_uplo, index_trans, index_diag, index_side; \
     index_side = (side) - CblasLeft;                         \
     index_uplo = (uplo) - CblasUpper;                        \
@@ -467,10 +467,10 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 
 #define MKL_DC_CBLAS_STRSM_CONVERT(layout, side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
-    char *fside[]    = {"L", "R"};\
-    char *fuplo[]    = {"U", "L"};\
-    char *ftrans[]   = {"N", "T", "C"};\
-    char *fdiag[]    = {"N", "U"};\
+    const char *fside[]    = {"L", "R"};\
+    const char *fuplo[]    = {"U", "L"};\
+    const char *ftrans[]   = {"N", "T", "C"};\
+    const char *fdiag[]    = {"N", "U"};\
     MKL_INT index_uplo, index_trans, index_diag, index_side; \
     index_side = (side) - CblasLeft;                         \
     index_uplo = (uplo) - CblasUpper;                        \
@@ -495,10 +495,10 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 
 #define MKL_DC_CBLAS_COMPLEX_TRSM_CONVERT(layout, side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
-    char *fside[]    = {"L", "R"};\
-    char *fuplo[]    = {"U", "L"};\
-    char *ftrans[]   = {"N", "T", "C"};\
-    char *fdiag[]    = {"N", "U"};\
+    const char *fside[]    = {"L", "R"};\
+    const char *fuplo[]    = {"U", "L"};\
+    const char *ftrans[]   = {"N", "T", "C"};\
+    const char *fdiag[]    = {"N", "U"};\
     MKL_INT index_uplo, index_trans, index_diag, index_side; \
     index_side = (side) - CblasLeft;                         \
     index_uplo = (uplo) - CblasUpper;                        \
@@ -507,15 +507,15 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
     MKL_INT temp_n = (n), temp_m = (m), temp_lda = (lda), temp_ldb = (ldb); \
     if ((layout) == CblasRowMajor) {                                    \
         if ( MKL_DC_CBLAS_TRSM_CHECKSIZE(m, n) ) { \
-            fname_unrolledc(fside[1-index_side], fuplo[1-index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_n), &(temp_m), (alpha), (a), &(temp_lda), (b), &(temp_ldb)); \
+            fname_unrolledc(fside[1-index_side], fuplo[1-index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_n), &(temp_m), (const void *)(alpha), (const void *)(a), &(temp_lda), (void *)(b), &(temp_ldb)); \
         } else { \
-            fname_direct(fside[1-index_side], fuplo[1-index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_n), &(temp_m), (alpha), (a), &(temp_lda), (b), &(temp_ldb), &mkl_direct_call_flag); \
+            fname_direct(fside[1-index_side], fuplo[1-index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_n), &(temp_m), (const void *)(alpha), (const void *)(a), &(temp_lda), (void *)(b), &(temp_ldb), &mkl_direct_call_flag); \
         } \
     } else if ((layout) == CblasColMajor) {        \
         if ( MKL_DC_CBLAS_TRSM_CHECKSIZE(m, n) ) { \
-            fname_unrolledc(fside[index_side], fuplo[index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_m), &(temp_n), (alpha), (a), &(temp_lda), (b), &(temp_ldb)); \
+            fname_unrolledc(fside[index_side], fuplo[index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_m), &(temp_n), (const void *)(alpha), (const void *)(a), &(temp_lda), (void *)(b), &(temp_ldb)); \
         } else { \
-            fname_direct(fside[index_side], fuplo[index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_m), &(temp_n), (alpha), (a), &(temp_lda), (b), &(temp_ldb), &mkl_direct_call_flag); \
+            fname_direct(fside[index_side], fuplo[index_uplo], ftrans[index_trans], fdiag[index_diag], &(temp_m), &(temp_n), (const void *)(alpha), (const void *)(a), &(temp_lda), (void *)(b), &(temp_ldb), &mkl_direct_call_flag); \
         } \
     } \
 } while (0)
@@ -528,8 +528,8 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 /* CBLAS SYRK */
 #define MKL_DC_CBLAS_DSYRK_CONVERT(layout, uplo, trans, n, k, alpha, a, lda, beta, c, ldc, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
-    char *fuplo[]    = {"U", "L"};\
-    char *ftrans[]   = {"N", "T"};\
+    const char *fuplo[]    = {"U", "L"};\
+    const char *ftrans[]   = {"N", "T"};\
     MKL_INT index_uplo, index_trans; \
     index_uplo = (uplo) - CblasUpper;   \
     index_trans = (trans) - CblasNoTrans;                               \
@@ -552,8 +552,8 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 
 #define MKL_DC_CBLAS_SSYRK_CONVERT(layout, uplo, trans, n, k, alpha, a, lda, beta, c, ldc, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
-    char *fuplo[]    = {"U", "L"};\
-    char *ftrans[]   = {"N", "T"};\
+    const char *fuplo[]    = {"U", "L"};\
+    const char *ftrans[]   = {"N", "T"};\
     MKL_INT index_uplo, index_trans; \
     index_uplo = (uplo) - CblasUpper;   \
     index_trans = (trans) - CblasNoTrans;                               \
@@ -576,23 +576,23 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 
 #define MKL_DC_CBLAS_COMPLEX_SYRK_CONVERT(layout, uplo, trans, n, k, alpha, a, lda, beta, c, ldc, fname_unrolledc, fname_direct)  do { \
     MKL_DIRECT_CALL_INIT_FLAG; \
-    char *fuplo[]    = {"U", "L"};\
-    char *ftrans[]   = {"N", "T"};\
+    const char *fuplo[]    = {"U", "L"};\
+    const char *ftrans[]   = {"N", "T"};\
     MKL_INT index_uplo, index_trans; \
     index_uplo = (uplo) - CblasUpper;   \
     index_trans = (trans) - CblasNoTrans;                               \
     MKL_INT temp_n = (n), temp_k = (k), temp_lda = (lda), temp_ldc = (ldc); \
     if ((layout) == CblasRowMajor) {                                    \
         if ( MKL_DC_CBLAS_SYRK_CHECKSIZE(n, k) ) { \
-            fname_unrolledc(fuplo[1-index_uplo], ftrans[1-index_trans], &(temp_n), &(temp_k), (alpha), (a), &(temp_lda), (beta), (c), &(temp_ldc)); \
+            fname_unrolledc(fuplo[1-index_uplo], ftrans[1-index_trans], &(temp_n), &(temp_k), (const void *)(alpha), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc)); \
         } else { \
-            fname_direct(fuplo[1-index_uplo], ftrans[1-index_trans], &(temp_n), &(temp_k), (alpha), (a), &(temp_lda), (beta), (c), &(temp_ldc), &mkl_direct_call_flag); \
+            fname_direct(fuplo[1-index_uplo], ftrans[1-index_trans], &(temp_n), &(temp_k), (const void *)(alpha), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc), &mkl_direct_call_flag); \
         } \
     } else if ((layout) == CblasColMajor) {        \
         if ( MKL_DC_CBLAS_SYRK_CHECKSIZE(n, k) ) { \
-            fname_unrolledc(fuplo[index_uplo], ftrans[index_trans], &(temp_n), &(temp_k), (alpha), (a), &(temp_lda), (beta), (c), &(temp_ldc)); \
+            fname_unrolledc(fuplo[index_uplo], ftrans[index_trans], &(temp_n), &(temp_k), (const void *)(alpha), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc)); \
         } else { \
-            fname_direct(fuplo[index_uplo], ftrans[index_trans], &(temp_n), &(temp_k), (alpha), (a), &(temp_lda), (beta), (c), &(temp_ldc), &mkl_direct_call_flag); \
+            fname_direct(fuplo[index_uplo], ftrans[index_trans], &(temp_n), &(temp_k), (const void *)(alpha), (const void *)(a), &(temp_lda), (const void *)(beta), (void *)(c), &(temp_ldc), &mkl_direct_call_flag); \
         } \
     } \
 } while (0)
@@ -629,10 +629,10 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 #define MKL_DC_COMPLEX_AXPY_CBLAS_CONVERT(n, alpha, x, incx, y, incy, CHECK, fname_unrolledc, fname_direct)  do { \
     MKL_INT temp_n = (n), temp_incx = (incx), temp_incy = (incy);\
     if (CHECK(n)) { \
-        fname_unrolledc(&(temp_n), (alpha), (x), &(temp_incx), (y), &(temp_incy));\
+        fname_unrolledc(&(temp_n), (const void *)(alpha), (const void *)(x), &(temp_incx), (void *)(y), &(temp_incy));\
     } else { \
         MKL_DIRECT_CALL_INIT_FLAG; \
-        fname_direct(&(temp_n), (alpha), (x), &(temp_incx), (y), &(temp_incy), &mkl_direct_call_flag); \
+        fname_direct(&(temp_n), (const void *)(alpha), (const void *)(x), &(temp_incx), (void *)(y), &(temp_incy), &mkl_direct_call_flag); \
     } \
 } while (0)
 
@@ -723,10 +723,10 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 /* ZGEMM3M */
 #define MKL_DC_ZGEMM3M_CONVERT(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)  do { \
     if (MKL_DC_GEMM3M_CHECKSIZE(m,n,k)) { \
-        mkl_dc_zgemm((transa), (transb), (m), (n), (k), (alpha), (a), (lda), (b), (ldb), (beta), (c), (ldc));\
+        mkl_dc_zgemm((transa), (transb), (m), (n), (k), (const void *)(alpha), (const void *)(a), (lda), (const void *)(b), (ldb), (const void *)(beta), (void *)(c), (ldc));\
     } else {  \
         MKL_DIRECT_CALL_INIT_FLAG; \
-        zgemm3m_direct((transa), (transb), (m), (n), (k), (alpha), (a), (lda), (b), (ldb), (beta), (c), (ldc), &mkl_direct_call_flag); \
+        zgemm3m_direct((transa), (transb), (m), (n), (k), (const void *)(alpha), (const void *)(a), (lda), (const void *)(b), (ldb), (const void *)(beta), (void *)(c), (ldc), &mkl_direct_call_flag); \
     }\
 } while (0)
 
@@ -737,10 +737,10 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 /* ?TRSM_DIRECT */
 #define MKL_DC_TRSM_CONVERT(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb, fname_unrolledc, fname_direct)  do { \
     if (MKL_DC_TRSM_CHECKSIZE(m,n)) { \
-        fname_unrolledc((side), (uplo), (transa), (diag), (m), (n), (alpha), (a), (lda), (b), (ldb)); \
+        fname_unrolledc((side), (uplo), (transa), (diag), (m), (n), (const void *)(alpha), (const void *)(a), (lda), (void *)(b), (ldb)); \
     } else { \
         MKL_DIRECT_CALL_INIT_FLAG; \
-        fname_direct((side), (uplo), (transa), (diag), (m), (n), (alpha), (a), (lda), (b), (ldb), &mkl_direct_call_flag); \
+        fname_direct((side), (uplo), (transa), (diag), (m), (n), (const void *)(alpha), (const void *)(a), (lda), (void *)(b), (ldb), &mkl_direct_call_flag); \
     } \
 } while (0)
 
@@ -824,10 +824,10 @@ float  sdot_direct(const MKL_INT *n, const float *x, const MKL_INT *incx, const 
 /* ?AXPY_DIRECT */
 #define MKL_DC_AXPY_CONVERT(n, alpha, x, incx, y, incy, CHECK, fname_unrolledc, fname_direct)  do { \
     if (CHECK(n)) { \
-        fname_unrolledc((n), (alpha), (x), (incx), (y), (incy));\
+        fname_unrolledc((n), (const void *)(alpha), (const void *)(x), (incx), (void *)(y), (incy));\
     } else { \
         MKL_DIRECT_CALL_INIT_FLAG; \
-        fname_direct((n), (alpha), (x), (incx), (y), (incy), &mkl_direct_call_flag); \
+        fname_direct((n), (const void *)(alpha), (const void *)(x), (incx), (void *)(y), (incy), &mkl_direct_call_flag); \
     } \
 } while (0)
 

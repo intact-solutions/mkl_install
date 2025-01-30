@@ -1,15 +1,20 @@
 /*******************************************************************************
-* Copyright 2020-2022 Intel Corporation.
+* Copyright 2020 Intel Corporation
 *
-* This software and the related documents are Intel copyrighted  materials,  and
-* your use of  them is  governed by the  express license  under which  they were
-* provided to you (License).  Unless the License provides otherwise, you may not
-* use, modify, copy, publish, distribute,  disclose or transmit this software or
-* the related documents without Intel's prior written permission.
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 *
-* This software and the related documents  are provided as  is,  with no express
-* or implied  warranties,  other  than those  that are  expressly stated  in the
-* License.
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions
+* and limitations under the License.
+*
+*
+* SPDX-License-Identifier: Apache-2.0
 *******************************************************************************/
 
 #ifndef _MKL_RNG_DEVICE_ENGINES_HPP_
@@ -20,66 +25,9 @@
 #include "oneapi/mkl/rng/device/types.hpp"
 #include "oneapi/mkl/rng/device/functions.hpp"
 #include "oneapi/mkl/rng/device/detail/engine_base.hpp"
+#include "oneapi/mkl/rng/device/detail/engine_helpers_base.hpp"
 
-namespace oneapi {
-namespace mkl {
-namespace rng {
-namespace device {
-
-// PSEUDO-RANDOM NUMBER HOST-SIDE ENGINE HELPERS
-
-template <typename EngineType>
-class engine_accessor : detail::engine_accessor_base<EngineType> {
-public:
-    EngineType load(size_t id) const {
-        return detail::engine_accessor_base<EngineType>::load(id);
-    }
-
-    void store(EngineType engine, size_t id) const {
-        detail::engine_accessor_base<EngineType>::store(engine, id);
-    }
-
-private:
-    engine_accessor(sycl::buffer<std::uint32_t, 1>& state_buf, sycl::handler& cgh)
-            : detail::engine_accessor_base<EngineType>(state_buf, cgh) {}
-    friend detail::engine_descriptor_base<EngineType>;
-};
-
-template <typename EngineType = philox4x32x10<>>
-class engine_descriptor : detail::engine_descriptor_base<EngineType> {};
-
-template <std::int32_t VecSize>
-class engine_descriptor<philox4x32x10<VecSize>>
-        : detail::engine_descriptor_base<philox4x32x10<VecSize>> {
-public:
-    engine_descriptor(sycl::queue& queue, sycl::range<1> range, std::uint64_t seed,
-                      std::uint64_t offset)
-            : detail::engine_descriptor_base<philox4x32x10<VecSize>>(queue, range, seed, offset) {}
-
-    template <typename InitEngineFunc>
-    engine_descriptor(sycl::queue& queue, sycl::range<1> range, InitEngineFunc func)
-            : detail::engine_descriptor_base<philox4x32x10<VecSize>>(queue, range, func) {}
-
-    auto get_access(sycl::handler& cgh) {
-        return detail::engine_descriptor_base<philox4x32x10<VecSize>>::get_access(cgh);
-    }
-};
-
-template <std::int32_t VecSize>
-class engine_descriptor<mrg32k3a<VecSize>> : detail::engine_descriptor_base<mrg32k3a<VecSize>> {
-public:
-    engine_descriptor(sycl::queue& queue, sycl::range<1> range, std::uint32_t seed,
-                      std::uint64_t offset)
-            : detail::engine_descriptor_base<mrg32k3a<VecSize>>(queue, range, seed, offset) {}
-
-    template <typename InitEngineFunc>
-    engine_descriptor(sycl::queue& queue, sycl::range<1> range, InitEngineFunc func)
-            : detail::engine_descriptor_base<mrg32k3a<VecSize>>(queue, range, func) {}
-
-    auto get_access(sycl::handler& cgh) {
-        return detail::engine_descriptor_base<mrg32k3a<VecSize>>::get_access(cgh);
-    }
-};
+namespace oneapi::mkl::rng::device {
 
 // PSEUDO-RANDOM NUMBER DEVICE-SIDE ENGINES
 
@@ -172,10 +120,9 @@ private:
     friend class detail::distribution_base;
 };
 
-
 // Class oneapi::mkl::rng::device::mcg31m1
 //
-// 
+//
 //
 // Supported parallelization methods:
 //      skip_ahead
@@ -191,10 +138,6 @@ public:
 
     mcg31m1(std::uint32_t seed, std::uint64_t offset = 0)
             : detail::engine_base<mcg31m1<VecSize>>(seed, offset) {}
-
-    mcg31m1(std::initializer_list<std::uint32_t> seed, std::uint64_t offset = 0)
-            : detail::engine_base<mcg31m1<VecSize>>(seed.size(), seed.begin(), offset) {}
-
 
 private:
     template <typename Engine>
@@ -224,11 +167,8 @@ public:
 
     mcg59() : detail::engine_base<mcg59<VecSize>>(default_seed) {}
 
-    mcg59(std::uint32_t seed, std::uint64_t offset = 0)
+    mcg59(std::uint64_t seed, std::uint64_t offset = 0)
             : detail::engine_base<mcg59<VecSize>>(seed, offset) {}
-
-    mcg59(std::initializer_list<std::uint32_t> seed, std::uint64_t offset = 0)
-            : detail::engine_base<mcg59<VecSize>>(seed.size(), seed.begin(), offset) {}
 
 private:
     template <typename Engine>
@@ -242,10 +182,6 @@ private:
     friend class detail::distribution_base;
 };
 
-
-} // namespace device
-} // namespace rng
-} // namespace mkl
-} // namespace oneapi
+} // namespace oneapi::mkl::rng::device
 
 #endif // _MKL_RNG_DEVICE_ENGINES_HPP_
