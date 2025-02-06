@@ -1,5 +1,5 @@
 #===============================================================================
-# Copyright 2021-2023 Intel Corporation.
+# Copyright 2021-2024 Intel Corporation.
 #
 # This software and the related documents are Intel copyrighted  materials,  and
 # your use of  them is  governed by the  express license  under which  they were
@@ -12,26 +12,42 @@
 # License.
 #===============================================================================
 
-set(PACKAGE_VERSION "2023.1.0")
+set(PACKAGE_VERSION "2025.0.1")
 
 if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)
   set(PACKAGE_VERSION_COMPATIBLE FALSE)
 else()
 
-  if("2023.1.0" MATCHES "^([0-9]+)\\.")
+  if("2025.0.1" MATCHES "^([0-9]+)\\.")
     set(CVF_VERSION_MAJOR "${CMAKE_MATCH_1}")
   else()
-    set(CVF_VERSION_MAJOR "2023.1.0")
+    set(CVF_VERSION_MAJOR "2025.0.1")
   endif()
 
-  if(PACKAGE_FIND_VERSION_MAJOR STREQUAL CVF_VERSION_MAJOR)
-    set(PACKAGE_VERSION_COMPATIBLE TRUE)
+  if(PACKAGE_FIND_VERSION_RANGE)
+    # both endpoints of the range must have the expected major version
+    math (EXPR CVF_VERSION_MAJOR_NEXT "${CVF_VERSION_MAJOR} + 1")
+    if (NOT PACKAGE_FIND_VERSION_MIN_MAJOR STREQUAL CVF_VERSION_MAJOR
+        OR ((PACKAGE_FIND_VERSION_RANGE_MAX STREQUAL "INCLUDE" AND NOT PACKAGE_FIND_VERSION_MAX_MAJOR STREQUAL CVF_VERSION_MAJOR)
+          OR (PACKAGE_FIND_VERSION_RANGE_MAX STREQUAL "EXCLUDE" AND NOT PACKAGE_FIND_VERSION_MAX VERSION_LESS_EQUAL CVF_VERSION_MAJOR_NEXT)))
+      set(PACKAGE_VERSION_COMPATIBLE FALSE)
+    elseif(PACKAGE_FIND_VERSION_MIN_MAJOR STREQUAL CVF_VERSION_MAJOR
+        AND ((PACKAGE_FIND_VERSION_RANGE_MAX STREQUAL "INCLUDE" AND PACKAGE_VERSION VERSION_LESS_EQUAL PACKAGE_FIND_VERSION_MAX)
+        OR (PACKAGE_FIND_VERSION_RANGE_MAX STREQUAL "EXCLUDE" AND PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION_MAX)))
+      set(PACKAGE_VERSION_COMPATIBLE TRUE)
+    else()
+      set(PACKAGE_VERSION_COMPATIBLE FALSE)
+    endif()
   else()
-    set(PACKAGE_VERSION_COMPATIBLE FALSE)
-  endif()
+    if(PACKAGE_FIND_VERSION_MAJOR STREQUAL CVF_VERSION_MAJOR)
+      set(PACKAGE_VERSION_COMPATIBLE TRUE)
+    else()
+      set(PACKAGE_VERSION_COMPATIBLE FALSE)
+    endif()
 
-  if(PACKAGE_FIND_VERSION STREQUAL PACKAGE_VERSION)
+    if(PACKAGE_FIND_VERSION STREQUAL PACKAGE_VERSION)
       set(PACKAGE_VERSION_EXACT TRUE)
+    endif()
   endif()
 endif()
 
